@@ -1,0 +1,105 @@
+name: Rust exercises
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-exercises-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Compile and run weekly exercises
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CARGO_TERM_COLOR: never
+      RUST_BACKTRACE: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install stable Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustc --version
+          cargo --version
+
+      - name: Check compilation and run completed exercises
+        shell: python
+        run: |
+          import os
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          # Ignore comments and string literals when looking for placeholder macros.
+          tokens = re.compile(
+              r'//[^\n]*|/\*[\s\S]*?\*/|r(?P<hashes>\#*)"[^"]*"(?(hashes)(?P=hashes))|'
+              r'"(?:\\.|[^"\\])*"|\b(?:todo|unimplemented)\s*!\s*[({\[]'
+          )
+
+          def placeholders(project):
+              files = []
+              for source in sorted(project.rglob("*.rs")):
+                  if "target" in source.relative_to(project).parts:
+                      continue
+                  text = source.read_text(encoding="utf-8")
+                  if any(re.match(r"(?:todo|unimplemented)\b", token.group())
+                         for token in tokens.finditer(text)):
+                      files.append(str(source))
+              return files
+
+          manifests = sorted(Path(".").glob("week-*/solution/Cargo.toml"))
+          if not manifests:
+              sys.exit("No week-*/solution/Cargo.toml found.")
+
+          rows = []
+          failed = False
+          for manifest in manifests:
+              project = manifest.parent
+              label = str(project)
+              print(f"::group::{label}", flush=True)
+              checked = subprocess.run(
+                  ["cargo", "check", "--all-targets", "--manifest-path", str(manifest)]
+              )
+              if checked.returncode:
+                  failed = True
+                  rows.append((label, "FAIL", "Compilation failed"))
+                  print("::endgroup::", flush=True)
+                  continue
+
+              pending = placeholders(project)
+              if pending:
+                  print("Pending placeholders: " + ", ".join(pending), flush=True)
+                  rows.append((label, "PENDING", "Compilation passed; main cases not run (todo!/unimplemented!)"))
+              else:
+                  result = subprocess.run(
+                      ["cargo", "run", "--manifest-path", str(manifest)]
+                  )
+                  if result.returncode:
+                      failed = True
+                      rows.append((label, "FAIL", "cargo run failed (assertion, panic, or build error)"))
+                  else:
+                      rows.append((label, "PASS", "Compilation and main cases passed"))
+              print("::endgroup::", flush=True)
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("## Weekly Rust exercises\n\n")
+              summary.write("| Exercise | Result | Details |\n| --- | --- | --- |\n")
+              for label, status, detail in rows:
+                  summary.write(f"| {label} | {status} | {detail} |\n")
+              summary.write(
+                  "\nPENDING means the exercise is unfinished, even if the workflow is green. "
+                  "PASS means the cases in main ran successfully; code review is still required.\n"
+              )
+          sys.exit(1 if failed else 0)
