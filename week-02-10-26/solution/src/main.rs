@@ -1,26 +1,10 @@
 // Khung bài tuần 02-10-26: thay todo! bằng code của bạn.
 // Các type/chữ ký và case dưới đây là đề bài, không phải bài đã nộp.
 // Không cần derive, clone, Vec, Result hay iterator adapters.
-
-enum Measurement {
-    Celsius(i32),
-    Offline,
-    Invalid(String),
-}
-
-fn temperature(measurement: &Measurement) -> Option<i32> {
-    match &measurement {
-        Measurement::Celsius(t) => {
-            if *t < -40 || *t > 125 {
-                None
-            } else {
-                Some(*t)
-            }
-        }
-        Measurement::Offline => None,
-        Measurement::Invalid(_) => None,
-    }
-}
+mod measurement;
+mod thermostat;
+use crate::measurement::*;
+use crate::thermostat::*;
 
 enum Alarm {
     Silent,
@@ -40,19 +24,6 @@ fn intensity(alarm: &Alarm) -> u8 {
             }
         }
     }
-}
-
-fn last_valid(samples: &[Measurement]) -> Option<i32> {
-    let mut result: Option<i32> = None;
-    if samples.is_empty() {
-        return result;
-    }
-    for temp in samples.iter() {
-        if let Some(t) = temperature(temp) {
-            result = Some(t);
-        }
-    }
-    result
 }
 
 enum CalibrationCommand {
@@ -87,99 +58,6 @@ impl Calibration {
                     false
                 }
             }
-        }
-    }
-}
-
-enum Mode {
-    Off,
-    Auto,
-    Manual(bool),
-}
-
-enum Command {
-    SetTarget(i32),
-    Sample(Measurement),
-    SetMode(Mode),
-    Rename(String),
-}
-
-struct Thermostat {
-    name: String,
-    target: i32,
-    last: Option<i32>,
-    mode: Mode,
-}
-
-impl Thermostat {
-    fn new(name: String) -> Self {
-        Thermostat {
-            name,
-            target: 22,
-            last: None,
-            mode: Mode::Off,
-        }
-    }
-
-    fn name(&self) -> &str {
-        &self.name
-    }
-
-    fn target(&self) -> i32 {
-        self.target
-    }
-
-    fn last(&self) -> Option<i32> {
-        self.last
-    }
-
-    fn mode(&self) -> &Mode {
-        &self.mode
-    }
-
-    fn apply(&mut self, command: Command) -> bool {
-        match command {
-            Command::SetTarget(t) => {
-                if !(16..=30).contains(&t) {
-                    false
-                } else {
-                    self.target = t;
-                    true
-                }
-            }
-            Command::Sample(m) => {
-                let sample = temperature(&m);
-                match sample {
-                    Some(t) => {
-                        self.last = Some(t);
-                        true
-                    }
-                    None => false,
-                }
-            }
-            Command::SetMode(m) => {
-                self.mode = m;
-                true
-            }
-            Command::Rename(s) => {
-                let new_name = s.trim();
-                if new_name.is_empty() {
-                    return false;
-                }
-                self.name = s;
-                true
-            }
-        }
-    }
-
-    fn is_heating(&self) -> bool {
-        match &self.mode {
-            Mode::Off => false,
-            Mode::Manual(on) => *on,
-            Mode::Auto => match &self.last {
-                None => false,
-                Some(t) => *t < self.target,
-            },
         }
     }
 }
