@@ -1,6 +1,6 @@
 # Review — tuần 02-10-26
 
-Trạng thái hiện tại: **thực hành hoàn thành; lý do pub đã đạt; đã review trả lời bổ sung lần 2, còn hai điểm thuật ngữ Copy/borrow cần củng cố**.
+Trạng thái hiện tại: **thực hành hoàn thành; lý do pub đã đạt; đã review trả lời bổ sung lần 2, đã chốt Copy của Option; còn bài củng cố về borrow và match sở hữu**.
 
 ## Review lần 2 — 05/10/2026, trả lời bổ sung
 
@@ -98,3 +98,7 @@ _Chưa có lần nộp hoặc sửa của người học._
 
 Sau khi nộp: ghi từng lần review, vấn đề, chỉnh sửa của người học và kết quả xác minh. Giữ nguyên lời trả lời; mọi chỉnh cú pháp vào source phải được ghi rõ.
 
+
+## Hỏi đáp tiếp — 05/10/2026
+
+Người học trả lời đúng câu hỏi Option<i32> so với Option<String>: Option<T> là Copy khi T: Copy. Lời trả lời nguyên văn đã lưu vào answers.md. Phần thực hành đã hoàn thành; câu hỏi Copy này được chốt. Không sửa source hoặc chạy lại kiểm tra cho thay đổi ghi nhận câu trả lời.
