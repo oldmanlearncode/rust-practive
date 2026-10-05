@@ -180,3 +180,13 @@ Tài liệu:
 - [Option: impl Copy khi T: Copy](https://doc.rust-lang.org/std/option/enum.Option.html#impl-Copy-for-Option%3CT%3E)
 - [References and Borrowing: phạm vi tham chiếu và lần sử dụng cuối](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)
 - [E0505: move khi đang được mượn](https://doc.rust-lang.org/error_codes/E0505.html)
+
+## Hỏi đáp tiếp — 05/10/2026: Copy của Option
+
+Câu hỏi: Option<i32> và Option<String> — kiểu nào là Copy, vì sao?
+
+Trả lời nguyên văn của người học:
+
+> `Option<i32>`  vì có implement Copy cho i32 theo mặc định còn String thì không .
+
+Nhận xét: Đúng. Option<T> implement Copy khi T: Copy. Vì i32: Copy nên Option<i32>: Copy; String không Copy nên Option<String> không Copy. Đã chốt câu hỏi này; câu hỏi về borrow và bài thử match sở hữu ở review lần 2 vẫn là bài củng cố riêng.
