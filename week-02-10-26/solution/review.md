@@ -102,3 +102,5 @@ Sau khi nộp: ghi từng lần review, vấn đề, chỉnh sửa của ngườ
 ## Hỏi đáp tiếp — 05/10/2026
 
 Người học trả lời đúng câu hỏi Option<i32> so với Option<String>: Option<T> là Copy khi T: Copy. Lời trả lời nguyên văn đã lưu vào answers.md. Phần thực hành đã hoàn thành; câu hỏi Copy này được chốt. Không sửa source hoặc chạy lại kiểm tra cho thay đổi ghi nhận câu trả lời.
+
+- 05/10/2026 — Hỏi đáp Option<&str>: người học trả lời đúng; đã lưu nguyên văn và ghi rõ copy tham chiếu không copy nội dung chuỗi. Không thay đổi source.
