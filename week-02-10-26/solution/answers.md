@@ -190,3 +190,13 @@ Trả lời nguyên văn của người học:
 > `Option<i32>`  vì có implement Copy cho i32 theo mặc định còn String thì không .
 
 Nhận xét: Đúng. Option<T> implement Copy khi T: Copy. Vì i32: Copy nên Option<i32>: Copy; String không Copy nên Option<String> không Copy. Đã chốt câu hỏi này; câu hỏi về borrow và bài thử match sở hữu ở review lần 2 vẫn là bài củng cố riêng.
+
+## Hỏi đáp tiếp — 05/10/2026: Option<&str>
+
+Câu hỏi: Nếu a: Option<&str>, phép gán let b = a copy hay move?
+
+Trả lời nguyên văn của người học:
+
+> Kiểu &str có implement Copy nên sẽ copy chứ ko move khi thực hiện gán Option<&str>
+
+Nhận xét: Đúng. &str: Copy nên Option<&str>: Copy. Phép gán copy Option và tham chiếu bên trong nếu là Some; không sao chép nội dung chuỗi và không chuyển ownership của String được mượn. Hai tham chiếu vẫn chịu quy tắc borrowing/lifetime của dữ liệu gốc. Đã chốt phần Copy của Option.
