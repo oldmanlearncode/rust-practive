@@ -1,6 +1,6 @@
 # Câu trả lời — tuần 02-10-26
 
-Trạng thái: **đã nộp, đã review lần 1 ngày 05/10/2026**.
+Trạng thái: **đã review lần 2 ngày 05/10/2026; thực hành hoàn thành, xem nhận xét câu trả lời bổ sung bên dưới**.
 Điền câu trả lời dưới từng mục. Khi review, lời người học được giữ nguyên; nhận xét và hỏi đáp bổ sung được ghi riêng.
 
 ## Câu 1 — Binding khi match tham chiếu
@@ -97,7 +97,7 @@ Lý do visibility:
 - Variant của pub enum tự có visibility của enum; không thêm pub riêng vào từng variant.
 - `use crate::measurement::*;` chạy đúng. Có thể dùng import tường minh để nhìn rõ module phụ thuộc type/hàm nào; đây là góp ý, không phải lỗi.
 
-### Câu hỏi kiểm tra bổ sung — Chưa trả lời
+### Câu hỏi kiểm tra bổ sung — Đã trả lời, nhận xét ở review lần 2
 
 1. Nếu bỏ `if samples.is_empty()` trong last_valid(), kết quả với slice rỗng có đổi không? Giải thích theo vòng for và giá trị result ban đầu.
  Trả lời: không đổi, vì nếu samples rỗng thì vòng for sẽ không chạy cho nên vẫn lấy giá trị result ban đầu là None.
@@ -121,3 +121,62 @@ Bài luyện ngắn: trên một bản thử riêng, thay `Invalid(message)` b�
 - [Copy](https://doc.rust-lang.org/std/marker.Copy.html)
 - [Borrowing và lần sử dụng cuối](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)
 - [Visibility và đường dẫn module](https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html)
+
+## Review lần 2 — 05/10/2026, câu trả lời bổ sung
+
+Giữ nguyên toàn bộ lời trả lời của người học ở trên.
+
+| Phần | Đánh giá |
+| --- | --- |
+| Câu bổ sung 1 — slice rỗng | Đúng và đủ |
+| Câu bổ sung 2 — last()/mode() | Đúng hướng về Copy, nhưng nhầm kiểu self.last |
+| Câu bổ sung 3 — trim()/move | Đúng dự đoán lỗi, cần nhấn mạnh lần sử dụng cuối của borrow |
+| Câu bổ sung 4 — pub | Đúng yêu cầu |
+| Bài thử Invalid(_) trên giá trị sở hữu | Chưa minh họa đúng ngữ cảnh: code hiện tại match trên tham chiếu |
+
+### 1. Slice rỗng
+
+Giải thích đúng: for chạy 0 lần, result giữ None. Đọc lại measurement.rs thấy đã bỏ điều kiện is_empty() dư; hành vi này phù hợp giải thích. Lần này không chạy lại code; đang review câu trả lời và kiểm tra thay đổi source nhỏ bằng đọc code.
+
+### 2. Copy của getter
+
+Cần sửa đúng tên kiểu trong giải thích: self.last là Option<i32>, không phải i32.
+Option<T> implement Copy khi T: Copy; vì i32 là Copy nên toàn bộ Option<i32> được copy, cả trường hợp Some lẫn None.
+Mode hiện không implement Copy, nên không thể move self.mode ra khỏi &self. Compiler từ chối phép move; không có việc field bị lấy ra rồi mới phát hiện lỗi. Getter hiện trả &Mode để mượn.
+Không phải mọi enum đều không Copy: Option<i32> cũng là enum. Hãy xét implement của chính type và điều kiện của nó.
+
+### 3. trim(), borrow và move
+
+Ownership vẫn thuộc s khi gọi trim(), nhưng riêng điều đó chưa đủ để cho phép move. Chủ sở hữu có thể đang bị mượn và chưa được phép move.
+Trong code hiện tại, lần dùng cuối của new_name là new_name.is_empty(); borrow kết thúc trước self.name = s nên move hợp lệ.
+Nếu thêm một lần dùng new_name sau phép gán, borrow phải còn hiệu lực qua phép gán; compiler từ chối move s ngay tại đó (E0505: cannot move out because it is borrowed).
+Không cần hình dung String/heap bị drop hoặc tham chiếu đã hỏng rồi Rust mới báo lỗi: việc move String không tự drop heap; lỗi là move owner trong khi borrow còn được dùng.
+
+### 4. Visibility
+
+Đã giải thích đúng mục đích pub cho type/hàm/method dùng ngoài module và private cho fields để kiểm soát cập nhật qua method.
+Dùng thuật ngữ “variant” của enum thay cho “thể hiện” sẽ chính xác hơn (thể hiện thường chỉ một giá trị/instance).
+Phần giải thích bổ sung này đáp ứng yêu cầu lý do pub. Ghi chú phân biệt binary crate với crate root ở review lần 1 vẫn áp dụng.
+
+### 5. Bài thử Invalid(_)
+
+Bạn nhận xét đúng rằng bài hiện tại có Measurement::Invalid(_).
+Tuy nhiên temperature() nhận &Measurement và đang match &measurement, nên không thể dùng code này để chứng minh underscore không move String trong một match trên giá trị sở hữu. Đó là hai ngữ cảnh khác nhau.
+
+Bài thử nhỏ trên bản riêng, không đổi source/case đã nộp:
+- Tạo Measurement::Invalid(String::from("lỗi")) và match trực tiếp biến sở hữu.
+- Dùng arm Invalid(_) và các arm kết thúc bình thường; thử mượn lại enum sau match.
+- Đổi thành Invalid(message), dùng message trong arm rồi thử mượn lại enum sau match.
+- Trước khi chạy, dự đoán hai kết quả và giải thích khác biệt.
+
+### Câu hỏi chốt — Chưa trả lời
+
+1. Option<i32> và Option<String>: kiểu nào Copy, và vì sao?
+2. Vì sao “s vẫn sở hữu String” chưa đủ để move s, nếu new_name còn được dùng sau đó?
+
+Kết luận: phần thực hành tuần 02-10-26 đã hoàn thành; lý do pub đã bổ sung đúng. Hai điểm cần củng cố trong diễn đạt là Option<i32>: Copy và borrow kết thúc ở lần sử dụng cuối. Không cần viết lại mini project.
+
+Tài liệu:
+- [Option: impl Copy khi T: Copy](https://doc.rust-lang.org/std/option/enum.Option.html#impl-Copy-for-Option%3CT%3E)
+- [References and Borrowing: phạm vi tham chiếu và lần sử dụng cuối](https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html)
+- [E0505: move khi đang được mượn](https://doc.rust-lang.org/error_codes/E0505.html)
