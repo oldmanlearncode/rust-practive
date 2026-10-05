@@ -9,7 +9,17 @@ enum Measurement {
 }
 
 fn temperature(measurement: &Measurement) -> Option<i32> {
-    todo!("Bài 1: đọc nhiệt độ hợp lệ qua tham chiếu")
+    match &measurement {
+        Measurement::Celsius(t) => {
+            if *t < -40 || *t > 125 {
+                None
+            } else {
+                Some(*t)
+            }
+        }
+        Measurement::Offline => None,
+        Measurement::Invalid(_) => None,
+    }
 }
 
 enum Alarm {
@@ -19,11 +29,30 @@ enum Alarm {
 }
 
 fn intensity(alarm: &Alarm) -> u8 {
-    todo!("Bài 2: match đầy đủ và giới hạn cường độ")
+    match alarm {
+        Alarm::Silent => 0,
+        Alarm::Light => 1,
+        Alarm::Beep(n) => {
+            if *n >= 10 {
+                10
+            } else {
+                *n
+            }
+        }
+    }
 }
 
 fn last_valid(samples: &[Measurement]) -> Option<i32> {
-    todo!("Bài 3: mẫu hợp lệ cuối cùng")
+    let mut result: Option<i32> = None;
+    if samples.is_empty() {
+        return result;
+    }
+    for temp in samples.iter() {
+        if let Some(t) = temperature(temp) {
+            result = Some(t);
+        }
+    }
+    result
 }
 
 enum CalibrationCommand {
@@ -37,15 +66,28 @@ struct Calibration {
 
 impl Calibration {
     fn new() -> Self {
-        todo!("Bài 4: constructor")
+        Calibration { offset: 0 }
     }
 
     fn offset(&self) -> i32 {
-        todo!("Bài 4: getter")
+        self.offset
     }
 
     fn apply(&mut self, command: &CalibrationCommand) -> bool {
-        todo!("Bài 4: xử lý lệnh, không đổi trạng thái khi thất bại")
+        match command {
+            CalibrationCommand::Reset => {
+                self.offset = 0;
+                true
+            }
+            CalibrationCommand::Set(value) => {
+                if *value >= -10 && *value <= 10 {
+                    self.offset = *value;
+                    true
+                } else {
+                    false
+                }
+            }
+        }
     }
 }
 
@@ -71,31 +113,74 @@ struct Thermostat {
 
 impl Thermostat {
     fn new(name: String) -> Self {
-        todo!("Mini: tên đầu vào, target 22, last None, mode Off")
+        Thermostat {
+            name,
+            target: 22,
+            last: None,
+            mode: Mode::Off,
+        }
     }
 
     fn name(&self) -> &str {
-        todo!("Mini: mượn tên")
+        &self.name
     }
 
     fn target(&self) -> i32 {
-        todo!("Mini: đọc target")
+        self.target
     }
 
     fn last(&self) -> Option<i32> {
-        todo!("Mini: đọc mẫu cuối")
+        self.last
     }
 
     fn mode(&self) -> &Mode {
-        todo!("Mini: mượn mode")
+        &self.mode
     }
 
     fn apply(&mut self, command: Command) -> bool {
-        todo!("Mini: tiêu thụ lệnh; xác thực trước khi sửa field")
+        match command {
+            Command::SetTarget(t) => {
+                if !(16..=30).contains(&t) {
+                    false
+                } else {
+                    self.target = t;
+                    true
+                }
+            }
+            Command::Sample(m) => {
+                let sample = temperature(&m);
+                match sample {
+                    Some(t) => {
+                        self.last = Some(t);
+                        true
+                    }
+                    None => false,
+                }
+            }
+            Command::SetMode(m) => {
+                self.mode = m;
+                true
+            }
+            Command::Rename(s) => {
+                let new_name = s.trim();
+                if new_name.is_empty() {
+                    return false;
+                }
+                self.name = s;
+                true
+            }
+        }
     }
 
     fn is_heating(&self) -> bool {
-        todo!("Mini: tính từ mode, target, last")
+        match &self.mode {
+            Mode::Off => false,
+            Mode::Manual(on) => *on,
+            Mode::Auto => match &self.last {
+                None => false,
+                Some(t) => *t < self.target,
+            },
+        }
     }
 }
 
@@ -152,10 +237,10 @@ fn main() {
     assert_eq!(last_valid(&mixed[0..2]), Some(18));
     assert_eq!(last_valid(&[Measurement::Celsius(0)]), Some(0));
     assert_eq!(last_valid(&[Measurement::Celsius(-40)]), Some(-40));
-    assert_eq!(last_valid(&[
-        Measurement::Celsius(125),
-        Measurement::Celsius(i32::MAX),
-    ]), Some(125));
+    assert_eq!(
+        last_valid(&[Measurement::Celsius(125), Measurement::Celsius(i32::MAX),]),
+        Some(125)
+    );
 
     println!("Bài 4");
     let mut calibration = Calibration::new();
