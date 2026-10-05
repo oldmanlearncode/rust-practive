@@ -20,9 +20,6 @@ pub fn temperature(measurement: &Measurement) -> Option<i32> {
 
 pub fn last_valid(samples: &[Measurement]) -> Option<i32> {
     let mut result: Option<i32> = None;
-    if samples.is_empty() {
-        return result;
-    }
     for temp in samples.iter() {
         if let Some(t) = temperature(temp) {
             result = Some(t);

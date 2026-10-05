@@ -100,11 +100,20 @@ Lý do visibility:
 ### Câu hỏi kiểm tra bổ sung — Chưa trả lời
 
 1. Nếu bỏ `if samples.is_empty()` trong last_valid(), kết quả với slice rỗng có đổi không? Giải thích theo vòng for và giá trị result ban đầu.
+ Trả lời: không đổi, vì nếu samples rỗng thì vòng for sẽ không chạy cho nên vẫn lấy giá trị result ban đầu là None.
 2. Vì sao last() có thể trả `self.last` từ `&self`, còn mode() hiện trả `&Mode`? Cả hai type có đặc điểm Copy gì?
+ Trả lời: self.last có kiểu i32, còn self.mode có kiểu enum Mode, i32 có triển khai Copy theo mặc định còn Mode thì mặc định là không, cho nên khi trả trực tiếp self.last giá trị sẽ được Copy mà ko bị move ra khỏi last, ngược lại Mode chưa có triển khai Copy cho nên giá trị cần dùng con trỏ để mượn giá trị, nếu ko giá trị sẽ bị move khởi mode
 3. Trong Rename, sau `let new_name = s.trim();`, vì sao vẫn move được s vào self.name? Nếu dùng new_name sau phép gán đó thì chuyện gì xảy ra?
+ Trả lời: vì method trim() chỉ nhận tham chiếu &self(String) và trả về một &str, nên sau khi mượn xong thì Ownership vẫn ở s nên có thể move vào self.name được.
+ Nếu dùng new_name sau phép gán sẽ bị lỗi vì giá trị của s đã bị move, cho nên &str từ s.trim() không còn hợp lệ nữa. 
 4. Bổ sung lý do pub theo lời của bạn cho phần module tree.
+ Trả lời: 
+ measurement: cần public enum Measurement(chỉ cần pub cho enum, không cần cho các thể hiện của enum, vì sẽ có cùng pub với enum), fn temperature, fn last_valid vì enum và các function này được dùng ở nơi khác ngoài module,
+ thermostat: cần public Thermostat, Mode, Command, vì main cần dùng; các method của struct Thermostat, còn các fields được giữ private, để đảm bảo các thông tin được cập nhật qua method với validate hoặc xử lý trước ...
+
 
 Bài luyện ngắn: trên một bản thử riêng, thay `Invalid(message)` bằng `Invalid(_)` trong một match sở hữu có các arm kết thúc bình thường; thử dùng lại measurement sau match và giải thích kết quả. Giữ nguyên case của bài nộp.
+ Trả lời: thực tế tôi đang dùng Measurement::Invalid(_) trong case bài tập của tôi. 
 
 ### Tài liệu chính thống
 
