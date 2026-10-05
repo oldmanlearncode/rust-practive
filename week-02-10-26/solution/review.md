@@ -1,6 +1,18 @@
 # Review — tuần 02-10-26
 
-Trạng thái hiện tại: **đã nộp; code đạt yêu cầu; lý thuyết đúng ý chính, cần bổ sung độ chính xác và lý do pub**.
+Trạng thái hiện tại: **thực hành hoàn thành; lý do pub đã đạt; đã review trả lời bổ sung lần 2, còn hai điểm thuật ngữ Copy/borrow cần củng cố**.
+
+## Review lần 2 — 05/10/2026, trả lời bổ sung
+
+- Đã đọc lại answers.md, measurement.rs và thermostat.rs hiện tại.
+- Giữ nguyên lời người học, thêm nhận xét riêng vào answers.md.
+- Câu slice rỗng đúng; source đã bỏ điều kiện is_empty() dư.
+- Câu pub đáp ứng yêu cầu về visibility; phần module thực hành và giải thích pub đạt.
+- Câu getter đúng hướng nhưng gọi nhầm self.last là i32: kiểu thực tế là Option<i32>, Copy vì i32: Copy.
+- Câu trim() đúng dự đoán lỗi; cần nói rõ borrow kết thúc ở lần dùng cuối. Ownership chưa chuyển không đồng nghĩa chủ sở hữu luôn được phép move khi còn borrow.
+- Bài thử Invalid(_) chưa minh họa match sở hữu vì code hiện tại match trên tham chiếu. Bài luyện bổ sung nằm trong answers.md.
+- Thực hành tuần này hoàn thành. Không yêu cầu viết lại mini project; còn hai câu hỏi ngắn củng cố Copy/borrow.
+- Lần này không sửa source và không chạy lại CI; bằng chứng CI lần 1 áp dụng source lúc đó, thay đổi bỏ kiểm tra slice rỗng được xem xét bằng đọc code.
 
 ## Review lần 1 — 05/10/2026
 
@@ -53,7 +65,7 @@ Code đủ điều kiện hoàn thành phần thực hành tuần này. Để ch
 - Trước lần nộp: hồ sơ phát hành bên dưới lưu trạng thái khung và giới hạn xác minh ở thời điểm tạo đề.
 - 05/10/2026 — Lần nộp 1: người học triển khai bốn bài, mini project, tách measurement/thermostat, trả lời năm câu và mô tả module.
 - 05/10/2026 — Review lần 1: đối chiếu yêu cầu và log CI; code pass. Cập nhật review.md/answers.md; không sửa source, assert hay lời trả lời của người học.
-- Chưa có lần sửa sau review này.
+- 05/10/2026 — Review lần 2: người học bổ sung câu trả lời và bỏ kiểm tra slice rỗng dư; nhận xét Copy/borrow được ghi riêng. Trợ giảng không sửa source.
 
 ## Hồ sơ phát hành ban đầu — Thông tin lịch sử
 
