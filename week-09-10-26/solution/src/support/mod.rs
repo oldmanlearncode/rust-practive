@@ -14,15 +14,15 @@ pub struct Ticket {
 
 impl Ticket {
     pub fn title(&self) -> &str {
-        todo!("Mượn title")
+        &self.title
     }
 
     pub fn team(&self) -> &str {
-        todo!("Mượn team")
+        &self.team
     }
 
     pub fn status(&self) -> &TicketStatus {
-        todo!("Mượn status")
+        &self.status
     }
 }
 
@@ -32,11 +32,13 @@ pub struct Board {
 
 impl Board {
     pub fn new() -> Self {
-        todo!("Sổ rỗng")
+        Board {
+            tickets: Vec::new(),
+        }
     }
 
     pub fn len(&self) -> usize {
-        todo!("Số ticket")
+        self.tickets.len()
     }
 
     pub fn submit(&mut self, title: String, team: String) -> bool {
@@ -44,7 +46,7 @@ impl Board {
     }
 
     pub fn ticket(&self, index: usize) -> Option<&Ticket> {
-        todo!("Truy cập an toàn bằng get")
+        self.tickets.get(index)
     }
 
     pub fn close(&mut self, index: usize) -> bool {
