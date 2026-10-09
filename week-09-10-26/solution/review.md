@@ -28,3 +28,11 @@ Trạng thái: **chưa nộp**. Source là khung đề và case do trợ giảng
 ## Lịch sử nộp, sửa và hỏi đáp
 
 _Chưa có lần nộp. Khi review sẽ ghi commit được xem, kết quả case, thiết kế/ownership, vấn đề và từng lần sửa; giữ nguyên source người học, ghi rõ mọi chỉnh cú pháp của trợ giảng nếu có._
+
+## Xác minh biên dịch qua GitHub Actions — 09/10/2026
+
+- Commit phát hành: `a49405975f58b0713267a45bf3849dd4bcfc4656`.
+- [Workflow run 37869799312](https://github.com/oldmanlearncode/rust-practive/actions/runs/37869799312), job `113625012609`: thành công.
+- Đã đọc log thực tế: `cargo check --all-targets` cho tuần 09-10-26 thành công với rustc/cargo 1.99.0; các cảnh báo unused/dead_code do khung chưa triển khai.
+- Workflow nhận diện todo trong basics.rs, support/mod.rs và validation.rs; tuần mới là **PENDING**, không chạy main, không tuyên bố assert đã pass.
+- Source, case và yêu cầu không đổi sau xác minh; lần cập nhật này chỉ thêm bằng chứng vào review.md.
