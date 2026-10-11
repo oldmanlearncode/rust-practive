@@ -41,6 +41,9 @@ pub fn add_stock(stock: &mut HashMap<String, u32>, item: String, quantity: u32) 
         return false;
     }
     let curent_quantity = stock.entry(item).or_insert(0);
+    if *curent_quantity > 100 {
+        return false;
+    }
     let new_quantity = quantity + *curent_quantity;
     if new_quantity > 100 {
         return false;
