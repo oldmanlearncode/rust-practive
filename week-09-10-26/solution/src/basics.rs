@@ -35,7 +35,6 @@ pub fn word_counts(text: &str) -> HashMap<String, usize> {
 }
 
 pub fn add_stock(stock: &mut HashMap<String, u32>, item: String, quantity: u32) -> bool {
-    println!("quantity: {}", quantity);
     let is_valid_item = non_blank(&item);
     let is_valid_quantity = quantity > 0 && quantity <= 100;
     if !is_valid_item || !is_valid_quantity {
