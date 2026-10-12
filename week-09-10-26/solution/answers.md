@@ -1,6 +1,6 @@
 # Câu trả lời — tuần 09-10-26
 
-Trạng thái: **đã nộp; review lần 1 ngày 11/10/2026, cần đính chính một số ý lý thuyết**.
+Trạng thái: **review lần 2 ngày 12/10/2026: thực hành hoàn thành; câu bổ sung đạt ý chính; còn đính chính câu 2**.
 
 ## Câu 1 — Mượn phần tử và push
 Vì biến first mượn trước đó lại được sử dụng sau khi thay đổi vec, 
@@ -114,3 +114,43 @@ Câu tự kiểm tra: bên trong support, `self::validation::non_blank` có hợ
 - [Vec: guarantees và remove](https://doc.rust-lang.org/std/vec/struct.Vec.html)
 - [Paths: self, super, crate — Rust Reference](https://doc.rust-lang.org/reference/paths.html)
 - [Re-export bằng pub use — Rust Book](https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html)
+
+## Review lần 2 — 12/10/2026
+
+Commit được review: `e15777347f7722b380547843c57a5e2f16044078`. Giữ nguyên lời trả lời và bản sửa của người học; nhận xét dưới đây là phần riêng.
+
+### Kết quả bản sửa
+- Ba chỉnh sửa code đã đạt: label_at dùng match/get trả chuỗi mượn; unicode_prefix duyệt chars với biến đếm; open_counts match đầy đủ Open/Closed.
+- [GitHub Actions 38223469887](https://github.com/oldmanlearncode/rust-practive/actions/runs/38223469887), job `114725126468`: đã đọc log biên dịch thành công và main chạy đến dòng tất cả case pass.
+- Main vẫn có blob SHA `b2a06c8039f6863b8ebceb75318290f73a55755f`, không đổi các assert gốc.
+- Phần thực hành hoàn thành. Chỉ còn đính chính nội dung lý thuyết bên dưới; không cần sửa lại mini project.
+
+### Câu bổ sung 1 — Đúng ý chính về Copy
+Bạn phân biệt đúng i32: Copy với String không Copy.
+Chỉnh cách diễn đạt: `let n = names[0]` với Vec<String> CỐ move và compiler từ chối; không phải chương trình đã move rồi để lại phần tử hỏng.
+`let n = &names[0]` mượn một `&String`, hợp lệ khi index tồn tại. Nếu dùng tên biến text thì text phải là Vec<String>; String/&str không cho indexing bằng một số nguyên.
+
+### Câu bổ sung 2 — Đạt
+Đúng với cây module hiện tại: self:: là support; support không có module/binding tên validation. validation nằm ở root, cùng cấp support. Dùng `crate::validation::non_blank` hoặc `super::validation::non_blank`.
+Không phải self:: không được dùng cho module con nói chung; đường dẫn ấy chỉ không có đích tương ứng ở cây hiện tại.
+
+### Câu 2 gốc — Còn hai điểm cần đính chính
+1. Bản sửa đang ghi `names.get(0)` trả `Option<String>`. Kiểu đúng là `Option<&String>`: Some chứa tham chiếu mượn, không lấy ownership và không sửa vector. Phân biệt với label_at trả `Option<&str>` nhờ as_str().
+2. Dòng “ở index 0 ... chỉ lưu địa chỉ tham chiếu của string” vẫn sai. Vec<String> chứa giá trị String; mỗi String quản lý buffer byte bằng pointer, length, capacity. Vec<&String> mới chứa shared references.
+Remove chỉ dịch những phần tử SAU vị trí xóa sang trái một vị trí; index sai panic.
+
+Câu tự kiểm tra ngắn: điền kiểu của `a` và `b`:
+```rust
+let names = vec![String::from("An")];
+let a = names.get(0);
+let b = label_at(&names, 0);
+```
+Đây cũng là bài thực hành nhỏ: thêm type annotations dự đoán vào đoạn trên rồi cargo check, không cần đổi assert cũ.
+
+### Các ý khác
+- Câu 4 đã sửa đúng ranh giới UTF-8 và scalar values. Slice hợp lệ trả &str, không phải char.
+- Câu 5 đã sửa đúng self::. Các typo basic/basics và cratre/crate vẫn có thể chỉnh cho tài liệu chính xác.
+- Câu 3 chưa đổi; giữ nhận xét lần 1: Rust ngăn drop/move owner khi borrow vẫn cần dùng, và map mượn từ nguồn caller có thể được trả về nếu lifetime phù hợp. Chưa cần triển khai ví dụ lifetime lúc này.
+
+### Trạng thái
+Thực hành: **hoàn thành**. Câu hỏi bổ sung: **đạt ý chính**. Hồ sơ lý thuyết: cần đính chính kiểu get và mô hình Vec<String>. Trợ giảng không sửa source hoặc thay lời trả lời người học.
