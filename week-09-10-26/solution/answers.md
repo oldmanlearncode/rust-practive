@@ -154,3 +154,15 @@ let b = label_at(&names, 0);
 
 ### Trạng thái
 Thực hành: **hoàn thành**. Câu hỏi bổ sung: **đạt ý chính**. Hồ sơ lý thuyết: cần đính chính kiểu get và mô hình Vec<String>. Trợ giảng không sửa source hoặc thay lời trả lời người học.
+
+## Hỏi đáp bổ sung — 12/10/2026: kiểu get và label_at
+
+**Trả lời nguyên văn của người học:**
+```text
+a : Option<&String>
+b: Option<%str>
+```
+
+**Nhận xét:** a đúng: Option<&String>. Với b, trợ giảng hiểu %str là lỗi gõ của &str; kiểu đúng là Option<&str>, vì label_at chuyển tham chiếu String thành string slice bằng as_str(). Cả hai đều mượn, không clone hoặc chuyển ownership. Phần phân biệt kiểu đã đúng nếu hiểu theo lỗi gõ này; hai đính chính trong câu 2 gốc vẫn cần cập nhật riêng để hồ sơ nhất quán.
+
+**Thực hành nhỏ:** thêm type annotations Option<&String> và Option<&str> vào hai biến, rồi cargo check.
