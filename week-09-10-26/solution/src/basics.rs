@@ -3,7 +3,10 @@ use std::collections::HashMap;
 // Khi triển khai, dùng crate::validation::non_blank ở bài 4.
 
 pub fn label_at(labels: &[String], index: usize) -> Option<&str> {
-    labels.get(index).map(|label| label.as_str())
+    match labels.get(index) {
+        None => None,
+        Some(text) => Some(text.as_str()),
+    }
 }
 
 pub fn take_label(labels: &mut Vec<String>, index: usize) -> Option<String> {
@@ -16,11 +19,13 @@ pub fn take_label(labels: &mut Vec<String>, index: usize) -> Option<String> {
 
 pub fn unicode_prefix(text: &str, limit: usize) -> String {
     let mut result = "".to_string();
-    for (index, letter) in text.chars().enumerate() {
+    let mut index = 0;
+    for char in text.chars() {
         if index >= limit {
             break;
         }
-        result.push(letter);
+        result.push(char);
+        index += 1;
     }
     result
 }

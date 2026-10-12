@@ -73,9 +73,12 @@ impl Board {
     pub fn open_counts(&self) -> HashMap<String, usize> {
         let mut result: HashMap<String, usize> = HashMap::new();
         for ticket in &self.tickets {
-            if let TicketStatus::Open = ticket.status() {
-                let count = result.entry(ticket.team().to_string()).or_insert(0);
-                *count += 1;
+            match ticket.status() {
+                TicketStatus::Open => {
+                    let count = result.entry(ticket.team().to_string()).or_insert(0);
+                    *count += 1;
+                }
+                TicketStatus::Closed => continue,
             }
         }
         result

@@ -9,8 +9,9 @@ Không, compiler vẫn không chấp nhận.
 
 ## Câu 2 — get, indexing và remove
 Vì ở index 0 của vec thực sự chỉ lưu địa chỉ tham chiếu của string, nên viết let name = names[0] sẽ ko lấy ownership được
-names.get(0) trả về Option<&String>, ownership vẫn thuộc về phần từ trong vector, trạng thái vector không đổi, chỉ số sai sẻ trả về None
+names.get(0) trả về Option<String>, Indexing không cho move một String ra rồi để lại một giá trị không hợp lệ.
 names.remove(0) trả về kiểu String, ownership được move ra và sẽ thuộc về biến nhận giá trị của hàm, trạng thái vector: vecto sẽ dịch toàn bộ phần tử của nó sang trái, nếu chỉ số sai sẽ lỗi.
+remove thực hiện cả việc lấy ownership và cập nhật vector.
 
 ## Câu 3 — Ownership của key HashMap
 Key không còn dùng được, 
@@ -19,8 +20,8 @@ Khi map ra hỏi hàm chọn key sở hữu vì nếu dùng mượn, khi ra kh�
 
 ## Câu 4 — Byte, Unicode scalar value và dấu kết hợp
 Với `"Đỏ🦀"`, `len()` đo số lượng bytes, chars() duyệt số ký tự theo chuẩn UTF-8,
-`&text[0..1]` không trả ra một ký tự, mà trả ra kết quả bytes, Rust ko cho phép điều này.
-Vì một ký tự hiển thị trên màn hình có thể được kết hợp bởi nhiều bytes, và có cả những trường hợp, hiển thị được kết hợp bởi nhiều hơn 1 chars.
+`&text[0..1]` panic vì bị ngắt giữa `"Đ"` không đủ để trả ra một char `&text[0..2]` hợp lệ
+`chars()` duyệt Unicode scalar values, không luôn tương ứng từng ký tự nhìn thấy.
 
 ## Câu 5 — Package, crates, module tree và visibility
 module tree
@@ -55,13 +56,19 @@ vì các hàm ở basic đã được re-export tại crate
 vì pub(crate) chỉ public cho toàn bộ trong crate, không public cho crate khác. main() nằm ở crate khác nên không gọi được.
 Đường dẫn tương đương tới helper bằng crate: cratre::validation::non_blank
 Đường dẫn tương đương tới helper bằng super: super::validation::non_blank
-self tùy thuộc vào impl mà nó trỏ tới item tương ứng, nếu là impl của Board, thì nó là Board, impl của Ticket, thif là Ticket.
+`self::` trong đường dẫn chỉ module hiện tại. Trong support, có thể dùng `self::Board` hoặc `self::Ticket`.
 
 ## Tự đánh giá và case bổ sung
 _Ghi chỗ còn vướng và các case bạn tự thêm, nếu có._
 
 ## Nhận xét của trợ giảng và hỏi đáp bổ sung
-_Chưa review. Khi có bài nộp, giữ nguyên văn câu trả lời; thêm nhận xét riêng và ghi từng lần bổ sung._
+Trả lời câu hỏi bổ sung:
+Câu hỏi: Vì sao let n = `numbers[0]` hợp lệ với Vec<i32>, còn Vec<String> thì không?
+Trả lời: vì với i32 có implement Copy nên n sẽ nhận giá trị Copy ở index 0, còn với String, không có implement Copy nên khi viết như vậy sẽ bị move ownership ra khỏi vector và để lại một gía trị không hợp lệ.
+Để hợp lệ có thể viết n = `&text[0]` để n chỉ mượn giá trị chứ không lấy ownership.
+
+Câu hỏi: Trong module support, self::validation::non_blank có hợp lệ không? Vì sao?
+ Trả lời: không, được, vì self đang chỉ module hiện tại là support thì ko thể theo path self::validation được
 
 ## Review lần 1 — 11/10/2026
 
