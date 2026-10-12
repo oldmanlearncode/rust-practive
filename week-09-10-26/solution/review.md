@@ -1,6 +1,6 @@
 # Review — tuần 09-10-26
 
-Trạng thái: **đã nộp; review lần 1 ngày 11/10/2026. Case pass; chờ chỉnh ba ràng buộc luyện tập và bổ sung lý thuyết.** Các mục phát hành bên dưới là lịch sử trước lần nộp.
+Trạng thái: **review lần 2 ngày 12/10/2026: thực hành hoàn thành, toàn bộ case pass; còn đính chính câu 2 lý thuyết.** Các mục bên dưới lưu lịch sử phát hành và từng lần review.
 
 ## Bối cảnh phát hành — 09/10/2026
 
@@ -87,3 +87,16 @@ Bài luyện tùy chọn: snapshot stock bằng clone trong main trước thao t
 
 ### Lịch sử sửa
 11/10/2026: trợ giảng chỉ cập nhật answers.md và review.md. Không sửa source, API, đề hoặc assert. Trạng thái: hành vi pass; chờ ba chỉnh sửa ràng buộc và bổ sung lý thuyết.
+
+## Review lần 2 — 12/10/2026
+
+- Commit bản sửa: `e15777347f7722b380547843c57a5e2f16044078`.
+- [Workflow 38223469887](https://github.com/oldmanlearncode/rust-practive/actions/runs/38223469887), job `114725126468`: success. Đã đọc log cargo check và cargo run tuần 09-10-26; main chạy hết tất cả case.
+- Main không đổi (blob `b2a06c8039f6863b8ebceb75318290f73a55755f`); đối chiếu thay đổi source: chỉ basics.rs và support/mod.rs đổi so với bản nộp trước.
+- label_at: match Some/None, không closure/clone; đạt.
+- unicode_prefix: for trên chars(), biến đếm tăng sau push, kiểm tra trước push; đạt limit 0, Unicode và limit cực đại. index được suy ra usize qua so sánh với limit; phép tăng chỉ chạy khi index < limit nên không vượt usize::MAX.
+- open_counts: match đủ Open/Closed, Closed continue, Open entry/or_insert; đạt. continue hợp lệ, không bắt buộc đổi thành arm rỗng.
+- Không phát hiện lỗi hành vi mới. **Phần thực hành tuần 09-10-26 hoàn thành**, không cần viết lại mini project.
+- Hai câu bổ sung đúng ý chính; câu Copy cần nói compiler từ chối thao tác move, và câu path đúng vì validation là module cùng cấp support.
+- Lý thuyết vẫn cần đính chính: get trả Option<&String>, không phải Option<String>; Vec<String> chứa giá trị String chứ không phải &String. Nhận xét chi tiết và bài type annotation nhỏ ghi ở answers.md.
+- Trợ giảng chỉ cập nhật hồ sơ answers/review, giữ nguyên source, assert và lời trả lời hiện tại. Không tuyên bố đã chạy local hoặc thêm case mới.
