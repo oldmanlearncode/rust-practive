@@ -1,3 +1,4 @@
+use std::fs::read_to_string;
 use std::io;
 
 use crate::validation::non_blank_value;
@@ -30,9 +31,14 @@ pub fn borrow_name(names: &[String], index: usize) -> Result<&str, String> {
 }
 
 pub fn parse_batch(lines: &[String]) -> Result<Vec<u32>, String> {
-    todo!("Bài 3: gọi parse_amount và truyền lỗi bằng ?")
+    let mut result: Vec<u32> = vec![];
+    for text in lines {
+        let value = parse_amount(text)?;
+        result.push(value);
+    }
+    Ok(result)
 }
 
 pub fn read_note(path: &str) -> Result<String, io::Error> {
-    todo!("Bài 4: đọc UTF-8, truyền io::Error bằng ?, trim nội dung")
+    Ok(read_to_string(path)?.trim().to_string())
 }
