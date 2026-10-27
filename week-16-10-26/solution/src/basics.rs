@@ -1,5 +1,7 @@
 use std::io;
 
+use crate::validation::non_blank_value;
+
 pub fn parse_amount(text: &str) -> Result<u32, String> {
     let trimmed_text = text.trim();
     if trimmed_text.is_empty() {
@@ -18,7 +20,13 @@ pub fn parse_amount(text: &str) -> Result<u32, String> {
 }
 
 pub fn borrow_name(names: &[String], index: usize) -> Result<&str, String> {
-    todo!("Bài 2: mượn tên hợp lệ bằng get")
+    match names.get(index) {
+        None => Err("missing".to_string()),
+        Some(name) => match non_blank_value(name) {
+            None => Err("blank".to_string()),
+            Some(value) => Ok(value),
+        },
+    }
 }
 
 pub fn parse_batch(lines: &[String]) -> Result<Vec<u32>, String> {
