@@ -1,7 +1,19 @@
 use std::collections::HashMap;
 
-pub enum JobState { Queued, Printed, Cancelled }
-pub enum QueueError { InvalidTitle, InvalidPages, Full, Missing, NotQueued }
+use crate::validate_title;
+
+pub enum JobState {
+    Queued,
+    Printed,
+    Cancelled,
+}
+pub enum QueueError {
+    InvalidTitle,
+    InvalidPages,
+    Full,
+    Missing,
+    NotQueued,
+}
 
 pub struct Job {
     title: String,
@@ -9,9 +21,15 @@ pub struct Job {
     state: JobState,
 }
 impl Job {
-    pub fn title(&self) -> &str { todo!("Getter mượn") }
-    pub fn pages(&self) -> u32 { todo!("Getter Copy") }
-    pub fn state(&self) -> &JobState { todo!("Getter mượn enum") }
+    pub fn title(&self) -> &str {
+        &self.title
+    }
+    pub fn pages(&self) -> u32 {
+        self.pages
+    }
+    pub fn state(&self) -> &JobState {
+        &self.state
+    }
 }
 
 pub struct Spool {
@@ -19,19 +37,67 @@ pub struct Spool {
     jobs: Vec<Job>,
 }
 impl Spool {
-    pub fn new(capacity: usize) -> Self { todo!("Hàng đợi rỗng") }
-    pub fn len(&self) -> usize { todo!("Số job đã lưu") }
-    pub fn job(&self, index: usize) -> Option<&Job> { todo!("Truy cập an toàn") }
+    pub fn new(capacity: usize) -> Self {
+        Spool {
+            capacity,
+            jobs: vec![],
+        }
+    }
+    pub fn len(&self) -> usize {
+        self.jobs.len()
+    }
+    pub fn job(&self, index: usize) -> Option<&Job> {
+        self.jobs.get(index)
+    }
     pub fn submit(&mut self, title: String, pages: u32) -> Result<usize, QueueError> {
-        todo!("Xác thực title qua helper, pages, capacity rồi move vào job")
+        if validate_title(&title).is_err() {
+            return Err(QueueError::InvalidTitle);
+        }
+        if !(1..=100).contains(&pages) {
+            return Err(QueueError::InvalidPages);
+        }
+        if self.jobs.len().eq(&self.capacity) {
+            return Err(QueueError::Full);
+        }
+
+        self.jobs.push(Job {
+            title,
+            pages,
+            state: JobState::Queued,
+        });
+        Ok(self.jobs.len() - 1)
     }
+
     pub fn cancel(&mut self, index: usize) -> Result<(), QueueError> {
-        todo!("Chỉ Queued chuyển thành Cancelled")
+        match self.jobs.get_mut(index) {
+            None => Err(QueueError::Missing),
+            Some(job) => match job.state() {
+                JobState::Printed => Err(QueueError::NotQueued),
+                JobState::Cancelled => Err(QueueError::NotQueued),
+                JobState::Queued => {
+                    job.state = JobState::Cancelled;
+                    Ok(())
+                }
+            },
+        }
     }
+
     pub fn print_next(&mut self) -> Option<usize> {
-        todo!("Queued có index nhỏ nhất chuyển Printed")
+        let mut index: usize = 0;
+        for job in &mut self.jobs {
+            match job.state() {
+                JobState::Queued => {
+                    job.state = JobState::Printed;
+                    return Some(index);
+                }
+                _ => index += 1,
+            }
+        }
+        None
     }
-    pub fn pending_pages(&self) -> u32 { todo!("Tổng pages của Queued") }
+    pub fn pending_pages(&self) -> u32 {
+        todo!("Tổng pages của Queued")
+    }
     pub fn queued_counts(&self) -> HashMap<String, usize> {
         todo!("Map mới đếm title của Queued bằng entry/or_insert")
     }
