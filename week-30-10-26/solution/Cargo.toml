@@ -1,0 +1,4 @@
+[package]
+name = "rust-week-30-10-26"
+version = "0.1.0"
+edition = "2021"

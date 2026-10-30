@@ -24,3 +24,7 @@ Trạng thái: **PENDING — chưa nộp**.
 ## Lịch sử review và sửa bài
 
 _Chưa có bài nộp. Khi review ghi commit, kết quả chạy, thiết kế/ownership và từng lần sửa. Giữ nguyên source/lời trả lời người học; mọi chỉnh cú pháp của trợ giảng phải chú thích rõ._
+
+## Review phần đã triển khai — 30/10/2026
+
+Commit: f68147f03148a2e09d24779811fed56682c3473b. Bài đang làm, chưa hoàn thành; chưa chạy local. take_document và insert_unique đúng luồng đọc/xác thực rồi cập nhật. validate_title đang đếm text gốc thay vì trimmed_text: 20 scalar có khoảng trắng hai đầu bị từ chối sai; đổi vòng đếm sang chuỗi đã trim. Spool chưa giới hạn capacity tối đa 100; new(usize::MAX) có thể nhận job thứ 101 sai hợp đồng. submit cần gọi helper validation::valid_title theo đề, thay vì gọi hàm public trực tiếp. pending_pages và queued_counts còn todo. Getter/cancel/print_next đã có triển khai; chưa kết luận pass toàn bộ khi chưa hoàn thiện. answers.md vẫn chưa có câu trả lời; giữ nguyên. Source được giữ nguyên, không chỉnh cú pháp.
