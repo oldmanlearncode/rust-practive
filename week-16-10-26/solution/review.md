@@ -24,3 +24,10 @@ Trạng thái: **PENDING — chưa nộp**.
 ## Lịch sử review và sửa bài
 
 _Chưa có bài nộp tuần này. Khi review, ghi commit, kết quả chạy, thiết kế/ownership, các lỗi và từng lần sửa. Giữ nguyên source và câu trả lời của người học; mọi chỉnh cú pháp của trợ giảng phải được chú thích rõ._
+
+## Review bài làm — 13/11/2026
+
+- Phiên bản source mới nhất: `09d8e635052e46345761372b503e6375e2852442`; kiểm tra trên main `58ff4cd5d5174bfa572148929a6bc579ae2843cc`. [Log CI](https://github.com/oldmanlearncode/rust-practive/actions/runs/42142101298/job/127644652210) xác nhận tuần 16 đã biên dịch và chạy hết assert gốc.
+- Bài 1: phân biệt đúng ba lỗi parse sau trim và giới hạn 1..=10_000. Bài 2: dùng get rồi trả lát trim mượn từ nguồn. Bài 3: gọi lại parse_amount và dùng ? để dừng ở lỗi đầu tiên. Bài 4: truyền nguyên io::Error bằng ?, trả String đã trim.
+- Mini project: thứ tự kiểm tra lỗi và lịch sử đúng trong case gốc. Getter mượn đúng, thống kê dùng entry và sở hữu key. Với invariant hiện tại, rollback khi đích vượt giới hạn khôi phục được số dư nguồn. Tuy nhiên đề yêu cầu xác thực hết **trước lần ghi đầu tiên**: code hiện trừ nguồn rồi mới kiểm tra đích. Đọc và xác thực cả hai số dư trước, sau đó cập nhật và ghi lịch sử. Nhánh if let cũng chỉ bắt TargetLimit; với flow hiện tại MissingTarget đã được loại trừ, nhưng nếu helper trả lỗi khác trong tương lai thì nhánh này sẽ đi tiếp như thành công.
+- Lịch sử bản làm: `591d6dd` bài mượn tên, `af3dc5d` parse lô/đọc file, `09d8e63` mini project. Chưa có câu trả lời lý thuyết mới. Giữ nguyên answers.md và source; không có chỉnh cú pháp.
